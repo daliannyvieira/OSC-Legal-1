@@ -30,7 +30,9 @@ import { saveUserData } from '../../../dataflow/modules/onboarding-modules';
 import { updateTableDatas, deleteOrg } from '../../../dataflow/modules/organization-modules';
 
 // Api
-import { removeOrg, getAllOrganizations, patchOrg } from '../../../services/api';
+import {
+	removeOrg, getAllOrganizations, getAllOrgsByUser, patchOrg,
+} from '../../../services/api';
 
 const mapStateToProps = state => ({
 	isAdmin: state.onboarding.user.isAdmin,
@@ -779,20 +781,23 @@ class OrganizationScreen extends Component {
 
 			this.props.saveUserData({
 				...user,
-				isAdmin: userData.isAdmin !== 0,
+				isAdmin: user.isAdmin !== 0,
 			});
 			this.getOrgs();
 		} catch (error) {
-			// console.log('error', error);
+			console.log('error', error);
 		}
 	}
 
 	getOrgs = async () => {
 		try {
-			const response = await getAllOrganizations(this.props.user.id);
-			console.log('response', response)
-
-			this.props.updateTableDatas(response.data);
+			if (this.props.user.isAdmin) {
+				const response = await getAllOrganizations(this.props.user.id);
+				this.props.updateTableDatas(response.data);
+			} else {
+				const response = await getAllOrgsByUser(this.props.user.id);
+				this.props.updateTableDatas(response.data);
+			}
 		} catch (error) {
 			console.log('error', error.response);
 		}
@@ -1121,7 +1126,7 @@ class OrganizationScreen extends Component {
 						<TableList
 							font={this.state.hovered === item}
 							onClick={() => this.isModalOpen(item)}
-							style={{ paddingLeft: '.7rem'}}
+							style={{ paddingLeft: '.7rem' }}
 							width={'10rem'}
 
 						>

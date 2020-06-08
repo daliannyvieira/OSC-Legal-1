@@ -69,8 +69,16 @@ export const removeOrg = org => axios({
 	data: org,
 });
 
-export const getAllOrganizations = userId => axios({
+export const getAllOrgsByUser = userId => axios({
 	url: `${API_URL}/users/${userId}/organizations`,
+	method: 'get',
+	headers: {
+		Authorization: `Bearer ${token}`,
+	},
+});
+
+export const getAllOrganizations = () => axios({
+	url: `${API_URL}/organizations`,
 	method: 'get',
 	headers: {
 		Authorization: `Bearer ${token}`,
